@@ -70,10 +70,10 @@
 		<xsl:variable name="mode3">
 			<xsl:apply-templates mode="json2xml3" select="$mode2"/>
 		</xsl:variable>
-		<xsl:copy-of select="$mode3"/>
+		<xsl:copy-of select="$mode3"/> <!-- change $mode3 to $mode[0-2] for easy debug -->
 	</xsl:template>
 
-	<!-- json2xml1 mode -->
+	<!-- json2xml1 mode: group content between {} and [] into object and array elements -->
 
 	<xsl:template mode="json2xml1" match="node()" priority="-9">
 		<xsl:copy-of select="."/>
@@ -96,7 +96,7 @@
 				/following-sibling::node()[1]"/>
 	</xsl:template>
 
-	<!-- json2xml2 mode -->
+	<!-- json2xml2 mode: group <string>:<string|number|object|array> into field element -->
 
 	<xsl:template priority="-9" mode="json2xml2" match="@*|node()">
 		<xsl:copy>
@@ -121,7 +121,7 @@
 	<xsl:template mode="json2xml2"
 		match="*[self::string|self::number|self::object|self::array][preceding-sibling::*[2]/self::string and preceding-sibling::*[1]/self::symbol[.=':']]"/>
 
-	<!-- json2xml3 mode -->
+	<!-- json2xml3 mode: drop comma between consecutive field and object elements -->
 
 	<xsl:template priority="-9" mode="json2xml3" match="@*|node()">
 		<xsl:copy>
