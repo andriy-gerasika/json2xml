@@ -4,10 +4,10 @@
 
 	<xsl:output method="xml" omit-xml-declaration="no" indent="yes" encoding="utf-8"/>
 
-	<xsl:include href="mode0.xsl?mode=mode0"/>
-	<xsl:include href="mode1.xsl?mode=mode1"/>
-	<xsl:include href="mode2.xsl?mode=mode2"/>
-	<xsl:include href="mode3.xsl?mode=mode3"/>
+	<xsl:include href="mode0.xsl"/>
+	<xsl:include href="mode1.xsl"/>
+	<xsl:include href="mode2.xsl"/>
+	<xsl:include href="mode3.xsl"/>
 
 	<xsl:template match="/">
 		<xsl:variable name="mode0">

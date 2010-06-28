@@ -2,7 +2,7 @@
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
-	<xsl:template match="json">
+	<xsl:template mode="mode0" match="json">
 		<xsl:copy>
 			<xsl:apply-templates select="@*"/>
 			<xsl:variable name="regexs" select="'//(.*?)\n','/\*(.*?)\*/','(''|&quot;)(.*?)\3','(-?\d+(\.\d+)?)','([:,\{\}\[\]])'"/>
