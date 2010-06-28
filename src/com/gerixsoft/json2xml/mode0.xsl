@@ -5,7 +5,8 @@
 	<xsl:template match="json">
 		<xsl:copy>
 			<xsl:apply-templates select="@*"/>
-			<xsl:analyze-string select="." regex="//(.*?)\n|/\*(.*?)\*/|('|&quot;)(.*?)\3|(-?\d+(\.\d+)?)" flags="s">
+			<xsl:variable name="regexs" select="'//(.*?)\n','/\*(.*?)\*/','(''|&quot;)(.*?)\3','(-?\d+(\.\d+)?)','([:,\{\}\[\]])'"/>
+			<xsl:analyze-string select="." regex="{string-join($regexs,'|')}" flags="s">
 				<xsl:matching-substring>
 					<xsl:choose>
 						<!-- single line comment -->
@@ -33,25 +34,21 @@
 								<xsl:value-of select="regex-group(5)"/>
 							</number>
 						</xsl:when>
+						<!-- symbol -->
+						<xsl:when test="regex-group(7)">
+							<symbol>
+								<xsl:value-of select="regex-group(7)"/>
+							</symbol>
+						</xsl:when>
 						<xsl:otherwise>
 							<xsl:message terminate="yes" select="'internal error'"/>
 						</xsl:otherwise>
 					</xsl:choose>
 				</xsl:matching-substring>
 				<xsl:non-matching-substring>
-					<xsl:variable name="symbol-regex" select="'[:,\{\}\[\]]'"/>
-					<xsl:analyze-string select="." regex="{$symbol-regex}">
-						<xsl:matching-substring>
-							<symbol>
-								<xsl:value-of select="."/>
-							</symbol>
-						</xsl:matching-substring>
-						<xsl:non-matching-substring>
-							<xsl:if test="normalize-space()!=''">
-								<xsl:message select="concat('unknown token: ', .)"/>
-							</xsl:if>
-						</xsl:non-matching-substring>
-					</xsl:analyze-string>
+					<xsl:if test="normalize-space()!=''">
+						<xsl:message select="concat('unknown token: ', .)"/>
+					</xsl:if>
 				</xsl:non-matching-substring>
 			</xsl:analyze-string>
 		</xsl:copy>
