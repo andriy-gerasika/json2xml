@@ -16,9 +16,14 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 
 import org.w3c.dom.Document;
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 public class JsonToXml {
 
@@ -31,6 +36,33 @@ public class JsonToXml {
 
 		Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(JsonToXml.class.getResource("main.xsl").toString()));
 		transformer.transform(new DOMSource(document), new StreamResult(new File("files/output.xml")));
+
+		SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+		Schema schema = factory.newSchema(new StreamSource(JsonToXml.class.getResourceAsStream("json.xsd")));
+
+		Validator validator = schema.newValidator();
+		validator.setErrorHandler(new ErrorHandler() {
+			@Override
+			public void warning(SAXParseException exception) throws SAXException {
+				log("warning", exception);
+			}
+
+			@Override
+			public void fatalError(SAXParseException exception) throws SAXException {
+				log("fatal error", exception);
+			}
+
+			@Override
+			public void error(SAXParseException exception) throws SAXException {
+				log("error", exception);
+			}
+
+			public void log(String type, SAXParseException exception) {
+				System.err.println(type + " at line: " + exception.getLineNumber() + " col:" + exception.getColumnNumber() + " message: "
+						+ exception.getMessage());
+			}
+		});
+		validator.validate(new StreamSource(new File("files/output.xml")));
 
 		System.out.println("ok");
 	}
