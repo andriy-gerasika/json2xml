@@ -11,18 +11,17 @@
 
 	<xsl:template match="/">
 		<xsl:variable name="mode0">
-			<xsl:apply-templates mode="mode0" select="."/>
+			<xsl:apply-templates mode="json2xml0" select="."/>
 		</xsl:variable>
 		<xsl:variable name="mode1">
-			<xsl:apply-templates mode="mode1" select="$mode0"/>
+			<xsl:apply-templates mode="json2xml1" select="$mode0"/>
 		</xsl:variable>
 		<xsl:variable name="mode2">
-			<xsl:apply-templates mode="mode2" select="$mode1"/>
+			<xsl:apply-templates mode="json2xml2" select="$mode1"/>
 		</xsl:variable>
 		<xsl:variable name="mode3">
-			<xsl:apply-templates mode="mode3" select="$mode2"/>
+			<xsl:apply-templates mode="json2xml3" select="$mode2"/>
 		</xsl:variable>
-
 		<xsl:copy-of select="$mode3"/>
 	</xsl:template>
 
