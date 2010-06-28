@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:my="urn.mynamespace" exclude-result-prefixes="my">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
 	<xsl:template match="json">
 		<xsl:copy>
@@ -82,17 +82,13 @@
 
 	<xsl:template mode="json2xml1" match="symbol[.=('}',']')]"/>
 
-	<xsl:function name="my:level">
-		<xsl:param name="context" as="element()"/>
-		<xsl:value-of select="$context/(count(preceding-sibling::symbol[.=('{','[')])-count(preceding-sibling::symbol[.=('}',']')]))"/>
-	</xsl:function>
-
 	<xsl:template mode="json2xml1" match="symbol[.=('{','[')]">
 		<xsl:element name="{if (.='{') then 'object' else 'array'}">
 			<xsl:apply-templates mode="json2xml1" select="following-sibling::node()[1]"/>
 		</xsl:element>
+		<xsl:variable name="level" select="count(preceding-sibling::symbol[.=('{','[')])-count(preceding-sibling::symbol[.=('}',']')])+1"/>
 		<xsl:apply-templates mode="json2xml1"
-			select="following-sibling::symbol[.=('}',']') and my:level(.)=my:level(current())+1][1]
+			select="following-sibling::symbol[.=('}',']') and count(preceding-sibling::symbol[.=('{','[')])-count(preceding-sibling::symbol[.=('}',']')])=$level][1]
 				/following-sibling::node()[1]"/>
 	</xsl:template>
 
