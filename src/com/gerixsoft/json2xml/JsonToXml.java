@@ -24,15 +24,24 @@ import org.xml.sax.helpers.AttributesImpl;
 public class JsonToXml {
 
 	public static void main(String[] args) throws ParserConfigurationException, IOException, SAXException, TransformerException {
+		if (args.length != 2) {
+			System.err.println("usage: <json-file> <xml-file>");
+			System.exit(-1);
+		}
+		json2xml(new File(args[0]), new File(args[1]));
+		System.out.println("ok");
+	}
+
+	public static void json2xml(File inputFile, File outputFile) throws ParserConfigurationException, IOException, SAXException, TransformerException {
 		SAXTransformerFactory handlerFactory = (SAXTransformerFactory) SAXTransformerFactory.newInstance();
 		TransformerHandler handler = handlerFactory.newTransformerHandler(new StreamSource(JsonToXml.class.getResource("main.xsl").toString()));
-		handler.setResult(new StreamResult(new File("files/output.xml")));
+		handler.setResult(new StreamResult(outputFile));
 		handler.startDocument();
 		handler.startElement("", "json", "json", new AttributesImpl());
 		{
 			char[] text;
 			{
-				InputStream inputStream = new FileInputStream(new File("files/input.json"));
+				InputStream inputStream = new FileInputStream(inputFile);
 				try {
 					ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 					try {
@@ -79,9 +88,7 @@ public class JsonToXml {
 						+ exception.getMessage());
 			}
 		});
-		validator.validate(new StreamSource(new File("files/output.xml")));
-
-		System.out.println("ok");
+		validator.validate(new StreamSource(outputFile));
 	}
 
 }
