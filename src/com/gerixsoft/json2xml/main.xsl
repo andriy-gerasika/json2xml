@@ -101,7 +101,7 @@
 	</xsl:template>
 
 	<xsl:template mode="json2xml2"
-		match="string[following-sibling::*[1]/self::symbol[.=':']	and following-sibling::*[2]/(self::string|self::number|self::object|self::array)]"/>
+		match="string[following-sibling::*[1]/self::symbol[.=':'] and following-sibling::*[2]/(self::string|self::number|self::object|self::array)]"/>
 
 	<xsl:template mode="json2xml2"
 		match="symbol[.=':'][preceding-sibling::*[1]/self::string and following-sibling::*[1]/(self::string|self::number|self::object|self::array)]">
