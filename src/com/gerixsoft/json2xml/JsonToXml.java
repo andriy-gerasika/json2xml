@@ -35,6 +35,7 @@ public class JsonToXml {
 	public static void json2xml(File inputFile, File outputFile) throws ParserConfigurationException, IOException, SAXException, TransformerException {
 		SAXTransformerFactory handlerFactory = (SAXTransformerFactory) SAXTransformerFactory.newInstance();
 		TransformerHandler handler = handlerFactory.newTransformerHandler(new StreamSource(JsonToXml.class.getResource("main.xsl").toString()));
+		handler.getTransformer().setOutputProperty("indent", "yes");
 		handler.setResult(new StreamResult(outputFile));
 		handler.startDocument();
 		handler.startElement("", "json", "json", new AttributesImpl());
