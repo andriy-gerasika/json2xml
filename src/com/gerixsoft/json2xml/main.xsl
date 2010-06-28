@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+
+	<xsl:output method="xml" omit-xml-declaration="no" indent="yes" encoding="utf-8"/>
+
+	<xsl:include href="mode1.xsl?mode=mode1"/>
+	<xsl:include href="mode2.xsl?mode=mode2"/>
+	<xsl:include href="mode3.xsl?mode=mode3"/>
+
+	<xsl:template match="/">
+		<xsl:variable name="mode1">
+			<xsl:apply-templates mode="mode1" select="."/>
+		</xsl:variable>
+		<xsl:variable name="mode2">
+			<xsl:apply-templates mode="mode2" select="$mode1"/>
+		</xsl:variable>
+		<xsl:variable name="mode3">
+			<xsl:apply-templates mode="mode3" select="$mode2"/>
+		</xsl:variable>
+
+		<xsl:copy-of select="$mode1"/>
+	</xsl:template>
+
+</xsl:stylesheet>
