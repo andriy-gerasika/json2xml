@@ -4,7 +4,7 @@
 
 	<xsl:template mode="mode0" match="json">
 		<xsl:copy>
-			<xsl:apply-templates select="@*"/>
+			<xsl:copy-of select="@*"/>
 			<xsl:variable name="regexs" select="'//(.*?)\n','/\*(.*?)\*/','(''|&quot;)(.*?)\3','(-?\d+(\.\d+)?)','([:,\{\}\[\]])'"/>
 			<xsl:analyze-string select="." regex="{string-join($regexs,'|')}" flags="s">
 				<xsl:matching-substring>
