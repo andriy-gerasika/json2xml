@@ -65,7 +65,6 @@ public class JsonToXml {
 
 		SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
 		Schema schema = factory.newSchema(new StreamSource(JsonToXml.class.getResourceAsStream("json.xsd")));
-
 		Validator validator = schema.newValidator();
 		validator.setErrorHandler(new ErrorHandler() {
 			@Override
