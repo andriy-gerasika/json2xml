@@ -87,9 +87,9 @@
 			<xsl:apply-templates mode="json2xml1" select="following-sibling::node()[1]"/>
 		</xsl:element>
 		<xsl:variable name="level" select="count(preceding-sibling::symbol[.=('{','[')])-count(preceding-sibling::symbol[.=('}',']')])+1"/>
-		<xsl:apply-templates mode="json2xml1"
-			select="following-sibling::symbol[.=('}',']') and count(preceding-sibling::symbol[.=('{','[')])-count(preceding-sibling::symbol[.=('}',']')])=$level][1]
-				/following-sibling::node()[1]"/>
+		<xsl:variable name="ender"
+			select="following-sibling::symbol[.=('}',']') and count(preceding-sibling::symbol[.=('{','[')])-count(preceding-sibling::symbol[.=('}',']')])=$level][1]"/>
+		<xsl:apply-templates mode="json2xml1" select="$ender/following-sibling::node()[1]"/>
 	</xsl:template>
 
 	<!-- json2xml2 mode: group <string>:<string|number|object|array> into field element -->
