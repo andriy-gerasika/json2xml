@@ -12,13 +12,13 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
-
-import com.gerixsoft.utils.XsltHelper;
 
 public class JsonToXml {
 
@@ -29,7 +29,7 @@ public class JsonToXml {
 		String json = getContents(new File("files/input.json"));
 		document.getDocumentElement().appendChild(document.createTextNode(json));
 
-		Transformer transformer = XsltHelper.newTransformer(JsonToXml.class.getResource("main.xsl"));
+		Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(JsonToXml.class.getResource("main.xsl").toString()));
 		transformer.transform(new DOMSource(document), new StreamResult(new File("files/output.xml")));
 
 		System.out.println("ok");
