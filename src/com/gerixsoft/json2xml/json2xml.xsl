@@ -14,7 +14,7 @@
 	<xsl:template name="json2xml">
 		<xsl:param name="text"/>
 		<xsl:variable name="mode0">
-			<xsl:variable name="regexps" select="'//(.*?)\n','/\*(.*?)\*/','(''|&quot;)(.*?)\3','(-?\d+(\.\d+)?)','([:,\{\}\[\]])'"/>
+			<xsl:variable name="regexps" select="'//(.*?)\n','/\*(.*?)\*/','(''|&quot;)(.*?)\3','(-?\d+(\.\d+)?)','([:,\{\}\[\]])','(true|false)'"/>
 			<xsl:analyze-string select="$text" regex="{string-join($regexps,'|')}" flags="s">
 				<xsl:matching-substring>
 					<xsl:choose>
@@ -48,6 +48,12 @@
 							<symbol>
 								<xsl:value-of select="regex-group(7)"/>
 							</symbol>
+						</xsl:when>
+						<!-- boolean -->
+						<xsl:when test="regex-group(8)">
+							<boolean>
+								<xsl:value-of select="regex-group(8)"/>
+							</boolean>
 						</xsl:when>
 						<xsl:otherwise>
 							<xsl:message terminate="yes" select="'internal error'"/>
@@ -101,10 +107,10 @@
 	</xsl:template>
 
 	<xsl:template mode="json2xml2"
-		match="string[following-sibling::*[1]/self::symbol[.=':'] and following-sibling::*[2]/(self::string|self::number|self::object|self::array)]"/>
+		match="string[following-sibling::*[1]/self::symbol[.=':'] and following-sibling::*[2]/(self::string|self::number|self::boolean|self::object|self::array)]"/>
 
 	<xsl:template mode="json2xml2"
-		match="symbol[.=':'][preceding-sibling::*[1]/self::string and following-sibling::*[1]/(self::string|self::number|self::object|self::array)]">
+		match="symbol[.=':'][preceding-sibling::*[1]/self::string and following-sibling::*[1]/(self::string|self::number|self::boolean|self::object|self::array)]">
 		<field name="{preceding-sibling::*[1]}">
 			<xsl:for-each select="following-sibling::*[1]">
 				<xsl:copy>
@@ -115,7 +121,7 @@
 	</xsl:template>
 
 	<xsl:template mode="json2xml2"
-		match="*[self::string|self::number|self::object|self::array][preceding-sibling::*[2]/self::string and preceding-sibling::*[1]/self::symbol[.=':']]"/>
+		match="*[self::string|self::number|self::boolean|self::object|self::array][preceding-sibling::*[2]/self::string and preceding-sibling::*[1]/self::symbol[.=':']]"/>
 
 	<!-- json2xml3 mode: drop comma between consecutive field and object elements -->
 

@@ -34,21 +34,16 @@
 				<xs:element ref="array"/>
 				<xs:element ref="string"/>
 				<xs:element ref="number"/>
+				<xs:element ref="boolean"/>
 			</xs:choice>
 			<xs:attribute name="name" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
 
-	<xs:element name="string">
-		<xs:simpleType>
-			<xs:restriction base="xs:string"/>
-		</xs:simpleType>
-	</xs:element>
+	<xs:element name="string" type="xs:string"/>
 
-	<xs:element name="number">
-		<xs:simpleType>
-			<xs:restriction base="xs:decimal"/>
-		</xs:simpleType>
-	</xs:element>
+	<xs:element name="number" type="xs:decimal"/>
+
+	<xs:element name="boolean" type="xs:boolean"/>
 
 </xs:schema>
