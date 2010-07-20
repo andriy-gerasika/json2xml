@@ -133,6 +133,6 @@
 
 	<xsl:template mode="json2xml3" match="object/symbol[.=','][preceding-sibling::*[1]/self::field and following-sibling::*[1]/self::field]"/>
 
-	<xsl:template mode="json2xml3" match="array/symbol[.=','][preceding-sibling::*[1]/self::object and following-sibling::*[1]/self::object]"/>
+	<xsl:template mode="json2xml3" match="array/symbol[.=','][preceding-sibling::*[1]/(self::string|self::number|self::boolean|self::object|self::array) and following-sibling::*[1]/(self::string|self::number|self::boolean|self::object|self::array)]"/>
 
 </xsl:stylesheet>
