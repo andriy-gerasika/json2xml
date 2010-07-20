@@ -14,7 +14,7 @@
 	<xsl:template name="json2xml">
 		<xsl:param name="text"/>
 		<xsl:variable name="mode0">
-			<xsl:variable name="regexps" select="'//(.*?)\n','/\*(.*?)\*/','(''|&quot;)(.*?)\3','(-?\d+(\.\d+)?)','([:,\{\}\[\]])','(true|false)'"/>
+			<xsl:variable name="regexps" select="'//(.*?)\n', '/\*(.*?)\*/', '(''|&quot;)(.*?)\3', '(-?\d+(\.\d+)?)', '([:,\{\}\[\]])', '(true|false)'"/>
 			<xsl:analyze-string select="$text" regex="{string-join($regexps,'|')}" flags="s">
 				<xsl:matching-substring>
 					<xsl:choose>
@@ -64,6 +64,7 @@
 					<xsl:if test="normalize-space()!=''">
 						<xsl:message select="concat('unknown token: ', .)"/>
 					</xsl:if>
+					<xsl:value-of select="."/>
 				</xsl:non-matching-substring>
 			</xsl:analyze-string>
 		</xsl:variable>
