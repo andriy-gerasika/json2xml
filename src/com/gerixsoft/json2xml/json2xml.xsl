@@ -63,8 +63,8 @@
 				<xsl:non-matching-substring>
 					<xsl:if test="normalize-space()!=''">
 						<xsl:message select="concat('unknown token: ', .)"/>
+						<xsl:value-of select="."/>
 					</xsl:if>
-					<xsl:value-of select="."/>
 				</xsl:non-matching-substring>
 			</xsl:analyze-string>
 		</xsl:variable>
