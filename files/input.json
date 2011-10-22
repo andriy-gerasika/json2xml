@@ -1,6 +1,6 @@
 {
      "firstName": "John",
-     "lastName": "Smith",
+     "lastName": null,
      "age": 25,
      "address": {
          "streetAddress": "21 2nd Street",

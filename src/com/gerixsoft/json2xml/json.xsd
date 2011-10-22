@@ -19,6 +19,7 @@
 				<xs:element ref="boolean"/>
 				<xs:element ref="object"/>
 				<xs:element ref="array"/>
+				<xs:element ref="null" />
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>
@@ -39,6 +40,7 @@
 				<xs:element ref="string"/>
 				<xs:element ref="number"/>
 				<xs:element ref="boolean"/>
+				<xs:element ref="null" />
 			</xs:choice>
 			<xs:attribute name="name" type="xs:string" use="required"/>
 		</xs:complexType>
@@ -50,4 +52,5 @@
 
 	<xs:element name="boolean" type="xs:boolean"/>
 
+	<xs:element name="null"/>
 </xs:schema>
