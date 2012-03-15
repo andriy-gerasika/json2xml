@@ -15,7 +15,8 @@
 		<xs:complexType>
 			<xs:choice minOccurs="0" maxOccurs="unbounded">
 				<xs:element ref="string"/>
-				<xs:element ref="number"/>
+				<xs:element ref="integer"/>
+				<xs:element ref="double"/>
 				<xs:element ref="boolean"/>
 				<xs:element ref="object"/>
 				<xs:element ref="array"/>
@@ -38,7 +39,8 @@
 				<xs:element ref="object"/>
 				<xs:element ref="array"/>
 				<xs:element ref="string"/>
-				<xs:element ref="number"/>
+				<xs:element ref="integer"/>
+				<xs:element ref="double"/>
 				<xs:element ref="boolean"/>
 				<xs:element ref="null" />
 			</xs:choice>
@@ -48,7 +50,9 @@
 
 	<xs:element name="string" type="xs:string"/>
 
-	<xs:element name="number" type="xs:double"/>
+	<xs:element name="integer" type="xs:integer"/>
+	
+	<xs:element name="double" type="xs:double"/>
 
 	<xs:element name="boolean" type="xs:boolean"/>
 

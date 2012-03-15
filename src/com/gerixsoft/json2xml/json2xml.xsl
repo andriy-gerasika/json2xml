@@ -14,7 +14,7 @@
 	<xsl:template name="json2xml">
 		<xsl:param name="text"/>
 		<xsl:variable name="mode0">
-			<xsl:variable name="regexps" select="'//(.*?)\n', '/\*(.*?)\*/', '(''|&quot;)(.*?)\3', '(-?\d+(\.\d+)?([eE][+-]?\d+)?)', '([:,\{\}\[\]])', '(true|false)', '(null)'"/>
+			<xsl:variable name="regexps" select="'//(.*?)\n', '/\*(.*?)\*/', '(''|&quot;)(.*?)\3', '(-?\d+(\.\d+([eE][+-]?\d+)?|[eE][+-]?\d+))', '(-?[1-9]\d*)', '([:,\{\}\[\]])', '(true|false)', '(null)'"/>
 			<xsl:analyze-string select="$text" regex="{string-join($regexps,'|')}" flags="s">
 				<xsl:matching-substring>
 					<xsl:choose>
@@ -37,26 +37,32 @@
 								<xsl:value-of select="regex-group(4)"/>
 							</string>
 						</xsl:when>
-						<!-- number -->
+						<!-- double -->
 						<xsl:when test="regex-group(5)">
-							<number>
+							<double>
 								<xsl:value-of select="regex-group(5)"/>
-							</number>
+							</double>
+						</xsl:when>
+						<!-- integer -->
+						<xsl:when test="regex-group(8)">
+							<integer>
+							  <xsl:value-of select="regex-group(8)"/>
+							</integer>
 						</xsl:when>
 						<!-- symbol -->
-						<xsl:when test="regex-group(8)">
+						<xsl:when test="regex-group(9)">
 							<symbol>
-								<xsl:value-of select="regex-group(8)"/>
+								<xsl:value-of select="regex-group(9)"/>
 							</symbol>
 						</xsl:when>
 						<!-- boolean -->
-						<xsl:when test="regex-group(9)">
+						<xsl:when test="regex-group(10)">
 							<boolean>
-								<xsl:value-of select="regex-group(9)"/>
+								<xsl:value-of select="regex-group(10)"/>
 							</boolean>
 						</xsl:when>
 						<!-- null -->
-						<xsl:when test="regex-group(10)">
+						<xsl:when test="regex-group(11)">
 							<null />
 						</xsl:when>
 						<xsl:otherwise>
@@ -103,7 +109,7 @@
 		<xsl:apply-templates mode="json2xml1" select="$ender/following-sibling::node()[1]"/>
 	</xsl:template>
 
-	<!-- json2xml2 mode: group <string>:<string|number|object|array> into field element -->
+	<!-- json2xml2 mode: group <string>:<string|integer|double|object|array> into field element -->
 
 	<xsl:template priority="-9" mode="json2xml2" match="@*|node()">
 		<xsl:copy>
@@ -112,10 +118,10 @@
 	</xsl:template>
 
 	<xsl:template mode="json2xml2"
-		match="string[following-sibling::*[1]/self::symbol[.=':'] and following-sibling::*[2]/(self::string|self::number|self::boolean|self::object|self::array|self::null)]"/>
+		match="string[following-sibling::*[1]/self::symbol[.=':'] and following-sibling::*[2]/(self::string|self::integer|self::double|self::boolean|self::object|self::array|self::null)]"/>
 
 	<xsl:template mode="json2xml2"
-		match="symbol[.=':'][preceding-sibling::*[1]/self::string and following-sibling::*[1]/(self::string|self::number|self::boolean|self::object|self::array|self::null)]">
+		match="symbol[.=':'][preceding-sibling::*[1]/self::string and following-sibling::*[1]/(self::string|self::integer|self::double|self::boolean|self::object|self::array|self::null)]">
 		<field name="{preceding-sibling::*[1]}">
 			<xsl:for-each select="following-sibling::*[1]">
 				<xsl:copy>
@@ -126,7 +132,7 @@
 	</xsl:template>
 
 	<xsl:template mode="json2xml2"
-		match="*[self::string|self::number|self::boolean|self::object|self::array|self::null][preceding-sibling::*[2]/self::string and preceding-sibling::*[1]/self::symbol[.=':']]"/>
+		match="*[self::string|self::integer|self::double|self::boolean|self::object|self::array|self::null][preceding-sibling::*[2]/self::string and preceding-sibling::*[1]/self::symbol[.=':']]"/>
 
 	<!-- json2xml3 mode: drop comma between consecutive field and object elements -->
 
@@ -138,6 +144,6 @@
 
 	<xsl:template mode="json2xml3" match="object/symbol[.=','][preceding-sibling::*[1]/self::field and following-sibling::*[1]/self::field]"/>
 
-	<xsl:template mode="json2xml3" match="array/symbol[.=','][preceding-sibling::*[1]/(self::string|self::number|self::boolean|self::object|self::array|self::null) and following-sibling::*[1]/(self::string|self::number|self::boolean|self::object|self::array|self::null)]"/>
+	<xsl:template mode="json2xml3" match="array/symbol[.=','][preceding-sibling::*[1]/(self::string|self::integer|self::double|self::boolean|self::object|self::array|self::null) and following-sibling::*[1]/(self::string|self::integer|self::double|self::boolean|self::object|self::array|self::null)]"/>
 
 </xsl:stylesheet>
