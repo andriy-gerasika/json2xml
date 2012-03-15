@@ -14,7 +14,7 @@
 	<xsl:template name="json2xml">
 		<xsl:param name="text"/>
 		<xsl:variable name="mode0">
-			<xsl:variable name="regexps" select="'//(.*?)\n', '/\*(.*?)\*/', '(''|&quot;)(.*?)\3', '(-?\d+(\.\d+([eE][+-]?\d+)?|[eE][+-]?\d+))', '(-?[1-9]\d*)', '([:,\{\}\[\]])', '(true|false)', '(null)'"/>
+			<xsl:variable name="regexps" select="'//(.*?)\n', '/\*(.*?)\*/', '(''|&quot;)(.*?)\3', '(-?\d+(\.\d+([eE][+-]?\d+)?|[eE][+-]?\d+))', '(-?[1-9]\d*)', '(-?0[0-7]+)', '(-?0x[0-9a-fA-F]+)', '([:,\{\}\[\]])', '(true|false)', '(null)'"/>
 			<xsl:analyze-string select="$text" regex="{string-join($regexps,'|')}" flags="s">
 				<xsl:matching-substring>
 					<xsl:choose>
@@ -46,23 +46,35 @@
 						<!-- integer -->
 						<xsl:when test="regex-group(8)">
 							<integer>
-							  <xsl:value-of select="regex-group(8)"/>
+								<xsl:value-of select="regex-group(8)"/>
+							</integer>
+						</xsl:when>
+						<!-- octal -->
+						<xsl:when test="regex-group(9)">
+							<integer>
+								<xsl:value-of xmlns:Integer="java:java.lang.Integer" select="Integer:parseInt(regex-group(9), 8)"/>
+							</integer>
+						</xsl:when>
+						<!-- hex -->
+						<xsl:when test="regex-group(10)">
+							<integer>
+								<xsl:value-of xmlns:Integer="java:java.lang.Integer" select="Integer:parseInt(replace(regex-group(10), '0x', ''), 16)"/>
 							</integer>
 						</xsl:when>
 						<!-- symbol -->
-						<xsl:when test="regex-group(9)">
+						<xsl:when test="regex-group(11)">
 							<symbol>
-								<xsl:value-of select="regex-group(9)"/>
+								<xsl:value-of select="regex-group(11)"/>
 							</symbol>
 						</xsl:when>
 						<!-- boolean -->
-						<xsl:when test="regex-group(10)">
+						<xsl:when test="regex-group(12)">
 							<boolean>
-								<xsl:value-of select="regex-group(10)"/>
+								<xsl:value-of select="regex-group(12)"/>
 							</boolean>
 						</xsl:when>
 						<!-- null -->
-						<xsl:when test="regex-group(11)">
+						<xsl:when test="regex-group(13)">
 							<null />
 						</xsl:when>
 						<xsl:otherwise>
