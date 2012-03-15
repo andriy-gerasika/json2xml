@@ -48,7 +48,7 @@
 
 	<xs:element name="string" type="xs:string"/>
 
-	<xs:element name="number" type="xs:decimal"/>
+	<xs:element name="number" type="xs:double"/>
 
 	<xs:element name="boolean" type="xs:boolean"/>
 

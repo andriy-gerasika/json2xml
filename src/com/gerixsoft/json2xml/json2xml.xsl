@@ -14,7 +14,7 @@
 	<xsl:template name="json2xml">
 		<xsl:param name="text"/>
 		<xsl:variable name="mode0">
-			<xsl:variable name="regexps" select="'//(.*?)\n', '/\*(.*?)\*/', '(''|&quot;)(.*?)\3', '(-?\d+(\.\d+)?)', '([:,\{\}\[\]])', '(true|false)', '(null)'"/>
+			<xsl:variable name="regexps" select="'//(.*?)\n', '/\*(.*?)\*/', '(''|&quot;)(.*?)\3', '(-?\d+(\.\d+)?([eE][+-]?\d+)?)', '([:,\{\}\[\]])', '(true|false)', '(null)'"/>
 			<xsl:analyze-string select="$text" regex="{string-join($regexps,'|')}" flags="s">
 				<xsl:matching-substring>
 					<xsl:choose>
@@ -44,19 +44,19 @@
 							</number>
 						</xsl:when>
 						<!-- symbol -->
-						<xsl:when test="regex-group(7)">
+						<xsl:when test="regex-group(8)">
 							<symbol>
-								<xsl:value-of select="regex-group(7)"/>
+								<xsl:value-of select="regex-group(8)"/>
 							</symbol>
 						</xsl:when>
 						<!-- boolean -->
-						<xsl:when test="regex-group(8)">
+						<xsl:when test="regex-group(9)">
 							<boolean>
-								<xsl:value-of select="regex-group(8)"/>
+								<xsl:value-of select="regex-group(9)"/>
 							</boolean>
 						</xsl:when>
 						<!-- null -->
-						<xsl:when test="regex-group(9)">
+						<xsl:when test="regex-group(10)">
 							<null />
 						</xsl:when>
 						<xsl:otherwise>
