@@ -14,7 +14,7 @@
 	<xsl:template name="json2xml">
 		<xsl:param name="text"/>
 		<xsl:variable name="mode0">
-			<xsl:variable name="regexps" select="'//(.*?)\n', '/\*(.*?)\*/', '(''|&quot;)(.*?)\3', '(-?\d+(\.\d+([eE][+-]?\d+)?|[eE][+-]?\d+))', '(-?[1-9]\d*)', '(-?0[0-7]+)', '(-?0x[0-9a-fA-F]+)', '([:,\{\}\[\]])', '(true|false)', '(null)'"/>
+			<xsl:variable name="regexps" select="'//(.*?)\n', '/\*(.*?)\*/', '(''|&quot;)(([^\\]|\\[\\&quot;''/btnvfr])*?)\3', '(-?\d+(\.\d+([eE][+-]?\d+)?|[eE][+-]?\d+))', '(-?[1-9]\d*)', '(-?0[0-7]+)', '(-?0x[0-9a-fA-F]+)', '([:,\{\}\[\]])', '(true|false)', '(null)'"/>
 			<xsl:analyze-string select="$text" regex="{string-join($regexps,'|')}" flags="s">
 				<xsl:matching-substring>
 					<xsl:choose>
@@ -34,47 +34,86 @@
 						<!-- string -->
 						<xsl:when test="regex-group(3)">
 							<string>
-								<xsl:value-of select="regex-group(4)"/>
+								<xsl:analyze-string select="regex-group(4)" regex="\\([\\&quot;'/btnvfr])" flags="s">
+									<xsl:matching-substring>
+										<xsl:variable name="s" select="regex-group(1)"/>
+										<xsl:choose>
+											<xsl:when test="$s=('\', '&quot;', '''', '/')">
+												<xsl:value-of select="regex-group(1)"/>
+											</xsl:when>
+											<xsl:when test="$s='b'">
+												<!--xsl:text>&#8;</xsl:text-->
+												<xsl:message select="'escape sequense \b is not supported by XML'"/>
+												<xsl:text>\b</xsl:text>
+											</xsl:when>
+											<xsl:when test="$s='t'">
+												<xsl:text>&#9;</xsl:text>
+											</xsl:when>
+											<xsl:when test="$s='n'">
+												<xsl:text>&#10;</xsl:text>
+											</xsl:when>
+											<xsl:when test="$s='v'">
+												<!--xsl:text>&#11;</xsl:text-->
+												<xsl:message select="'escape sequence \v is not supported by XML'"/>
+												<xsl:text>\v</xsl:text>
+											</xsl:when>
+											<xsl:when test="$s='f'">
+												<!--xsl:text>&#12;</xsl:text-->
+												<xsl:message select="'escape sequence \f is not supported by XML'"/>
+												<xsl:text>\f</xsl:text>
+											</xsl:when>
+											<xsl:when test="$s='r'">
+												<xsl:text>&#13;</xsl:text>
+											</xsl:when>
+											<xsl:otherwise>
+												<xsl:message terminate="yes" select="'internal error'"/>
+											</xsl:otherwise>
+										</xsl:choose>
+									</xsl:matching-substring>
+									<xsl:non-matching-substring>
+										<xsl:value-of select="."/>
+									</xsl:non-matching-substring>
+								</xsl:analyze-string>
 							</string>
 						</xsl:when>
 						<!-- double -->
-						<xsl:when test="regex-group(5)">
+						<xsl:when test="regex-group(6)">
 							<double>
-								<xsl:value-of select="regex-group(5)"/>
+								<xsl:value-of select="regex-group(6)"/>
 							</double>
 						</xsl:when>
 						<!-- integer -->
-						<xsl:when test="regex-group(8)">
+						<xsl:when test="regex-group(9)">
 							<integer>
-								<xsl:value-of select="regex-group(8)"/>
+								<xsl:value-of select="regex-group(9)"/>
 							</integer>
 						</xsl:when>
 						<!-- octal -->
-						<xsl:when test="regex-group(9)">
+						<xsl:when test="regex-group(10)">
 							<integer>
-								<xsl:value-of xmlns:Integer="java:java.lang.Integer" select="Integer:parseInt(regex-group(9), 8)"/>
+								<xsl:value-of xmlns:Integer="java:java.lang.Integer" select="Integer:parseInt(regex-group(10), 8)"/>
 							</integer>
 						</xsl:when>
 						<!-- hex -->
-						<xsl:when test="regex-group(10)">
+						<xsl:when test="regex-group(11)">
 							<integer>
-								<xsl:value-of xmlns:Integer="java:java.lang.Integer" select="Integer:parseInt(replace(regex-group(10), '0x', ''), 16)"/>
+								<xsl:value-of xmlns:Integer="java:java.lang.Integer" select="Integer:parseInt(replace(regex-group(11), '0x', ''), 16)"/>
 							</integer>
 						</xsl:when>
 						<!-- symbol -->
-						<xsl:when test="regex-group(11)">
+						<xsl:when test="regex-group(12)">
 							<symbol>
-								<xsl:value-of select="regex-group(11)"/>
+								<xsl:value-of select="regex-group(12)"/>
 							</symbol>
 						</xsl:when>
 						<!-- boolean -->
-						<xsl:when test="regex-group(12)">
+						<xsl:when test="regex-group(13)">
 							<boolean>
-								<xsl:value-of select="regex-group(12)"/>
+								<xsl:value-of select="regex-group(13)"/>
 							</boolean>
 						</xsl:when>
 						<!-- null -->
-						<xsl:when test="regex-group(13)">
+						<xsl:when test="regex-group(14)">
 							<null />
 						</xsl:when>
 						<xsl:otherwise>
