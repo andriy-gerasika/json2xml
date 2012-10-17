@@ -28,21 +28,44 @@ public class JsonToXml {
 			System.err.println("usage: <input-json-file-or-directory> <output-xml-file-or-directory>");
 			System.exit(-1);
 		}
-		json2xml(new File(args[0]), new File(args[1]));
+		JsonToXml json2xml = new JsonToXml(true);
+		json2xml.transform(new File(args[0]), new File(args[1]));
 		System.out.println("ok");
 	}
 
-	public static void json2xml(File inputFile, File outputFile) throws ParserConfigurationException, IOException, SAXException, TransformerException {
+	private Validator validator;
+
+	public JsonToXml(boolean validate) throws SAXException {
+		if (validate) {
+			SchemaFactory schemaFactory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+			Schema schema = schemaFactory.newSchema(new StreamSource(JsonToXml.class.getResourceAsStream("json.xsd")));
+			validator = schema.newValidator();
+			validator.setErrorHandler(new __ErrorHandler());
+		}
+	}
+
+	public void transform(File input, File output) throws ParserConfigurationException, IOException, SAXException, TransformerException {
+		if (input.isDirectory()) {
+			output.mkdir();
+			for (File child : input.listFiles()) {
+				if (child.isDirectory()) {
+					transform(child, new File(output, child.getName()));
+				} else if (child.getName().endsWith(".json")) {
+					transform(child, new File(output, child.getName().concat(".xml")));
+				}
+			}
+			return;
+		}
 		SAXTransformerFactory handlerFactory = (SAXTransformerFactory) SAXTransformerFactory.newInstance();
 		TransformerHandler handler = handlerFactory.newTransformerHandler(new StreamSource(JsonToXml.class.getResource("json2xml.xsl").toString()));
 		handler.getTransformer().setOutputProperty("indent", "yes");
-		handler.setResult(new StreamResult(outputFile));
+		handler.setResult(new StreamResult(output));
 		handler.startDocument();
 		handler.startElement("", "json", "json", new AttributesImpl());
 		{
 			char[] text;
 			{
-				InputStream inputStream = new FileInputStream(inputFile);
+				InputStream inputStream = new FileInputStream(input);
 				try {
 					ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 					try {
@@ -63,12 +86,9 @@ public class JsonToXml {
 		}
 		handler.endElement("", "json", "json");
 		handler.endDocument();
-
-		SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-		Schema schema = factory.newSchema(new StreamSource(JsonToXml.class.getResourceAsStream("json.xsd")));
-		Validator validator = schema.newValidator();
-		validator.setErrorHandler(new __ErrorHandler());
-		validator.validate(new StreamSource(outputFile));
+		if (validator != null) {
+			validator.validate(new StreamSource(output));
+		}
 	}
 
 	private static final class __ErrorHandler implements ErrorHandler {
