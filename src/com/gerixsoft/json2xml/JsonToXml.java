@@ -25,7 +25,7 @@ public class JsonToXml {
 
 	public static void main(String[] args) throws ParserConfigurationException, IOException, SAXException, TransformerException {
 		if (args.length != 2) {
-			System.err.println("usage: <json-file> <xml-file>");
+			System.err.println("usage: <input-json-file-or-directory> <output-xml-file-or-directory>");
 			System.exit(-1);
 		}
 		json2xml(new File(args[0]), new File(args[1]));
